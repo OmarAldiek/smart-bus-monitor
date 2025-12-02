@@ -1,0 +1,93 @@
+version: "3.9"
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto/password.txt:/mosquitto/config/password.txt
+      - mosquitto_data:/mosquitto/data
+    command: >
+      /bin/sh -c "mosquitto_passwd -b /mosquitto/config/password.txt <mqtt_username> <mqtt_password> && mosquitto -c /mosquitto/config/mosquitto.conf"
+
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: <db_user>
+      POSTGRES_PASSWORD: <db_password>
+      POSTGRES_DB: busdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - mosquitto
+      - postgres
+    environment:
+      MQTT_HOST: mosquitto
+      MQTT_PORT: 1883
+      MQTT_USERNAME: <mqtt_username>
+      MQTT_PASSWORD: <mqtt_password>
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: busdb
+      POSTGRES_USER: <db_user>
+      POSTGRES_PASSWORD: <db_password>
+      THINGSPEAK_CHANNEL_ID: "<channel_id>"
+      THINGSPEAK_MQTT_API_KEY: "<api_key>"
+      THINGSPEAK_ENABLED: "false"
+      CONFIG_OVERSPEED_THRESHOLD: 70
+      CONFIG_POLL_INTERVAL_SECONDS: 5
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_BASE_URL: "http://localhost:8000"
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - backend
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8080:80"
+
+  # Optional: Cloudflare Tunnel (configure separately with your own tunnel ID)
+  # cloudflared:
+  #   image: cloudflare/cloudflared:latest
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - nginx
+  #   command: tunnel --config /etc/cloudflared/config.yml run
+  #   environment:
+  #     - TUNNEL_TRANSPORT_PROTOCOL=quic
+  #   volumes:
+  #     - ./cloudflared-config.yml:/etc/cloudflared/config.yml:ro
+
+volumes:
+  mosquitto_data:
+  postgres_data:
+
+

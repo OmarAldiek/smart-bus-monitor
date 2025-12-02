@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+.env
+backend/.env
+
+# Node
+node_modules/
+frontend/build/
+frontend/.env
+
+# Misc
+.DS_Store
+.idea/
+.vscode/
+
+# Infrastructure / secrets (local only, not committed)
+infrastructure/mosquitto/password.txt
+infrastructure/docker-compose.yml
+infrastructure/cloudflared-config.yml
+.cloudflared/
+*.pem
