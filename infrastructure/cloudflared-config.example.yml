@@ -1,0 +1,13 @@
+# Example Cloudflare Tunnel configuration.
+# Copy to cloudflared-config.yml and replace the tunnel ID and hostname
+# with values from your own Cloudflare account.
+
+tunnel: <tunnel-id>
+credentials-file: /etc/cloudflared/<tunnel-id>.json
+
+ingress:
+  - hostname: <your-hostname.example.com>
+    service: http://nginx:80
+  - service: http_status:404
+
+
