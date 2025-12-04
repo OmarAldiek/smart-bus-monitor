@@ -5,7 +5,8 @@
 @tailwind utilities;
 
 body {
-  @apply bg-neutral text-slate-800 font-sans;
+  font-family: "Poppins", system-ui, sans-serif;
+  @apply bg-neutral text-slate-800;
 }
 
 #root {
