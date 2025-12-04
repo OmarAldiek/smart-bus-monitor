@@ -51,7 +51,7 @@ CONFIG_POLL_INTERVAL_SECONDS=5
 ### Frontend (`frontend/.env`)
 
 ```
-REACT_APP_API_BASE_URL=http://localhost:8000
+REACT_APP_API_BASE_URL=http://<host>:8000
 ```
 
 > **ThingSpeak toggle:** The backend only tries to forward overspeed data when both `THINGSPEAK_ENABLED=true` (or toggled on via the Settings page) and valid `THINGSPEAK_*` secrets are provided.
@@ -69,8 +69,8 @@ Services:
 |------------|------------|----------------------------------------|
 | Mosquitto  | `1883`     | Auth required (development credentials defined in Compose) |
 | PostgreSQL | `5432`     | Credentials from `.env`                 |
-| Backend    | `http://localhost:8000` | FastAPI + REST             |
-| Frontend   | `http://localhost:3000` | CRA dashboard               |
+| Backend    | `http://<host>:8000` | FastAPI + REST             |
+| Frontend   | `http://<host>:3000` | CRA dashboard               |
 
 Health check: `curl http://localhost:8000/health`
 
@@ -79,7 +79,7 @@ Health check: `curl http://localhost:8000/health`
 Install deps once:
 ### Option A – Launch from the Dashboard (recommended)
 
-1. Open `http://localhost:3000` and log in with a development admin user (seeded automatically on first run).
+1. Open your dashboard URL (default `http://<host>:3000`) and log in with a development admin user (seeded automatically on first run).
 2. Go to **Settings → Simulator Control**.
 3. Click **"Start 13 simulators"** to launch all buses, or use the per-bus controls in the table to start/stop individual buses.
 4. Note: Buses 1, 5, 9, and 13 are marked as stationary (0–5 km/h) to simulate parked buses for testing door-open alerts.
